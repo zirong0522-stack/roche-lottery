@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>Roche 2026 新春開工｜年度代表字抽籤（大獎＋煙火版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      font-family: "Noto Sans TC", system-ui;
+      background:
+        radial-gradient(circle at 10% 0%, #f97316 0, transparent 45%),
+        radial-gradient(circle at 90% 0%, #facc15 0, transparent 40%),
+        radial-gradient(circle at 20% 100%, #1d4ed8 0, transparent 45%),
+        linear-gradient(180deg, #020617, #020617);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    /* 柔和漂浮紙屑層 */
+    .confetti-layer {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(248,250,252,.9) 0, transparent 55%),
+        radial-gradient(circle, rgba(248,113,113,.9) 0, transparent 55%),
+        radial-gradient(circle, rgba(251,191,36,.9) 0, transparent 55%);
+      background-size: 4px 4px, 5px 5px, 6px 6px;
+      background-position: 10% 20%, 70% 10%, 30% 80%;
+      mix-blend-mode: screen;
+      opacity: .22;
+      animation: confettiFloat 18s linear infinite alternate;
+      z-index: 0;
+    }
+    @keyframes confettiFloat {
+      from { transform: translateY(0); }
+      to   { transform: translateY(20px); }
+    }
+
+    /* 中央光爆 */
+    .burst {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      opacity: 0;
+    }
+    .burst::before {
+      content: "";
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle, rgba(251,191,36,1) 0, rgba(251,191,36,0.1) 55%, transparent 70%);
+      filter: blur(1px);
+      opacity: 0;
+    }
+    .burst.show::before {
+      animation: burstPop .7s ease-out;
+    }
+    @keyframes burstPop {
+      0%   { transform: scale(.25); opacity: .95; }
+      60%  { transform: scale(1.1); opacity: .75; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    /* 大獎煙火 */
+    .fireworks {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 4;
+      opacity: 0;
+    }
+    .fireworks.show { opacity: 1; }
+    .firework {
+      position: absolute;
+      bottom: -40px;
+      width: 4px;
+      height: 120px;
+      background: linear-gradient(to top, rgba(251,191,36,0), rgba(251,191,36,1));
+      opacity: 0;
+    }
+    .fireworks.show .firework {
+      animation: fireworkLaunch 0.9s ease-out forwards;
+    }
+    .firework::after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #facc15;
+      box-shadow: 0 0 18px rgba(250,204,21,1);
+    }
+    @keyframes fireworkLaunch {
+      0%   { transform: translateY(0); opacity: 0; }
+      40%  { opacity: 1; }
+      100% { transform: translateY(-360px); opacity: 0; }
+    }
+
+    /* 大獎金幣雨 */
+    .coins {
+      pointer-events: none;
+      position: fixed;
+      inset: -40px 0 0;
+      overflow: hidden;
+      z-index: 4;
+      opacity: 0;
+    }
+    .coins.show { opacity: 1; }
+    .coin {
+      position: absolute;
+      top: -40px;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #fefce8, #fbbf24);
+      box-shadow: 0 0 8px rgba(250,204,21,.9);
+      opacity: 0;
+    }
+    .coins.show .coin {
+      animation: coinFall 1.3s linear forwards;
+    }
+    .coin::after {
+      content: "¥";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #7c2d12;
+      font-weight: 700;
+    }
+    @keyframes coinFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      15%  { opacity: 1; }
+      100% { transform: translateY(520px) rotate(260deg); opacity: 0; }
+    }
+
+    .app {
+      max-width: 480px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      position: relative;
+      border-radius: 32px;
+      padding: 26px 22px 26px;
+      background: radial-gradient(circle at 0 0, rgba(248,250,252,.18), transparent 60%),
+                  radial-gradient(circle at 100% 100%, rgba(251,191,36,.32), transparent 65%),
+                  rgba(15,23,42,.96);
+      backdrop-filter: blur(16px);
+      box-shadow:
+        0 30px 80px rgba(0,0,0,.8),
+        inset 0 0 0 1px rgba(148,163,184,.4);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0 0, rgba(248,250,252,.13), transparent 55%),
+        radial-gradient(circle at 100% 0, rgba(251,191,36,.16), transparent 55%);
+      opacity: .7;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-wrap {
+      width: 160px;
+      margin: 0 auto 10px;
+    }
+    .logo-wrap img {
+      width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(15,23,42,.85));
+    }
+
+    .badge-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: .16em;
+      color: #bfdbfe;
+      background: rgba(37,99,235,.24);
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+    .badge i {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #38bdf8;
+    }
+    .badge-newyear {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #fef3c7;
+      background: radial-gradient(circle at 0 0,#fbbf24,#f97316);
+      padding: 4px 12px;
+      border-radius: 999px;
+      box-shadow: 0 0 0 1px rgba(249,250,251,.2);
+    }
+    .badge-jackpot {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #fef9c3;
+    }
+
+    h1 {
+      margin: 6px 0 2px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: .18em;
+    }
+    .subtitle {
+      font-size: 13px;
+      opacity: .9;
+      margin-bottom: 4px;
+    }
+    .hint {
+      font-size: 11px;
+      color: #fed7d7;
+    }
+
+    .section { display: none; margin-top: 12px; }
+    .section.show { display: block; animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+    input {
+      width: 100%; margin-top: 8px;
+      padding: 10px 14px; border-radius: 999px;
+      background: #020617; border: 1px solid #64748b; color: #fff;
+      font-size: 13px;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease, transform .1s ease;
+    }
+    input:focus {
+      border-color: #fb923c;
+      box-shadow: 0 0 0 1px #fb923c;
+      background: rgba(15,23,42,.98);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 999px;
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      background: radial-gradient(circle at 0 0,#facc15,#f97316);
+      color: #111827;
+      cursor: pointer;
+      box-shadow: 0 18px 40px rgba(248,171,56,.85);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .18s ease;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 54px rgba(248,171,56,.95);
+    }
+    button:disabled {
+      opacity: .55;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    #mainBtn {
+      animation: mainPulse 2.4s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes mainPulse {
+      0%,100% { transform: scale(1); box-shadow: 0 18px 40px rgba(248,171,56,.8); }
+      50%     { transform: scale(1.03); box-shadow: 0 22px 60px rgba(248,171,56,1); }
+    }
+
+    .already-text {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #fef3c7;
+    }
+    .already-text span {
+      font-weight: 700;
+    }
+
+    .kanji-box {
+      width: 150px;
+      height: 150px;
+      margin: 16px auto 10px;
+      border-radius: 36px;
+      background: radial-gradient(circle at 30% 0%, #fefce8, #f97316);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 60px rgba(248,171,56,0.9);
+      position: relative;
+      overflow: hidden;
+    }
+    .spin-ring {
+      position: absolute;
+      inset: -16%;
+      border-radius: 999px;
+      border: 2px dashed rgba(254,249,195,0.85);
+      animation: spin 7s linear infinite;
+    }
+    @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+    .kanji-inner { position: relative; z-index: 1; }
+
+    .kanji {
+      font-size: 58px;
+      font-weight: 900;
+      color: #7c2d12;
+      text-shadow: 0 6px 16px rgba(124,45,18,0.85);
+      letter-spacing: .26em;
+      text-indent: .26em;
+    }
+
+    .kanji-box.is-spinning { animation: shake .4s ease-in-out infinite; }
+    @keyframes shake {
+      0%{transform:translateX(0);}25%{transform:translateX(-4px);}
+      50%{transform:translateX(4px);}75%{transform:translateX(-3px);}
+      100%{transform:translateX(0);}
+    }
+
+    .kanji-box.reveal { animation: pop .55s ease-out; }
+    @keyframes pop {
+      0%   { transform: scale(.9); box-shadow: 0 0 0 0 rgba(251,191,36,1); }
+      60%  { transform: scale(1.08); box-shadow: 0 0 0 22px rgba(251,191,36,0); }
+      100% { transform: scale(1);   box-shadow: 0 20px 60px rgba(248,171,56,0.9); }
+    }
+
+    .tagline {
+      margin-top: 6px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .tagline.jackpot {
+      color: #facc15;
+      text-shadow: 0 0 16px rgba(250,204,21,0.9);
+    }
+    .desc {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.7;
+      padding: 0 6px;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-secondary,
+    .btn-ghost {
+      width: 100%;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: none;
+    }
+    .btn-secondary {
+      border: 1px solid rgba(248,250,252,0.8);
+      background: rgba(15,23,42,0.98);
+      color: #e5e7eb;
+    }
+    .btn-secondary:hover {
+      background: rgba(30,64,175,0.98);
+      border-color: #fbbf24;
+    }
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: #cbd5f5;
+      box-shadow: none;
+    }
+
+    .footer {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #e5e7eb;
+      opacity: .7;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 24px 18px 22px; }
+      h1 { font-size: 22px; }
+      .kanji-box { margin-top: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="confetti-layer"></div>
+  <div class="burst" id="burst"></div>
+
+  <!-- 大獎煙火 -->
+  <div class="fireworks" id="fireworks">
+    <div class="firework" style="left:15%; animation-delay:0s;"></div>
+    <div class="firework" style="left:45%; animation-delay:.1s;"></div>
+    <div class="firework" style="left:75%; animation-delay:.2s;"></div>
+  </div>
+
+  <!-- 大獎金幣雨 -->
+  <div class="coins" id="coins">
+    <div class="coin" style="left:8%; animation-delay:0s;"></div>
+    <div class="coin" style="left:22%; animation-delay:.1s;"></div>
+    <div class="coin" style="left:38%; animation-delay:.15s;"></div>
+    <div class="coin" style="left:54%; animation-delay:.2s;"></div>
+    <div class="coin" style="left:70%; animation-delay:.25s;"></div>
+    <div class="coin" style="left:86%; animation-delay:.3s;"></div>
+  </div>
+
+  <div class="app">
+    <div class="card">
+      <div class="card-inner">
+        <div class="logo-wrap">
+          <img src="Roche_Logo_Blue_PMS.png" alt="Roche" onerror="this.style.display='none'">
+        </div>
+
+        <div class="badge-row">
+          <div class="badge"><i></i> ROCHE 2026 開工限定</div>
+          <div class="badge-newyear">🧧 新春開工・抽出你的年度代表字</div>
+          <div class="badge-jackpot">⭐ 內含 1 張隱藏大獎籤，抽到請洽現場兌獎</div>
+        </div>
+
+        <h1>年度代表字</h1>
+        <div class="subtitle">送給自己一個 2026 的小小新年簽詩</div>
+        <div class="hint">＊每支手機僅能抽一次，結果會自動記錄保留</div>
+
+        <!-- 首頁 -->
+        <div id="homeSection" class="section show">
+          <input id="nameInput" placeholder="姓名（必填）">
+          <input id="empInput" placeholder="員工編號（選填）">
+          <button id="mainBtn">開始抽籤</button>
+          <div id="alreadyText" class="already-text" style="display:none;">
+            你今年已抽到代表字：<span id="alreadyWord"></span>，可再次點按鈕查看你的卡牌。
+          </div>
+        </div>
+
+        <!-- 結果頁 -->
+        <div id="resultSection" class="section">
+          <div class="kanji-box" id="kanjiBox">
+            <div class="spin-ring"></div>
+            <div class="kanji-inner">
+              <div id="kanji" class="kanji">籤</div>
+            </div>
+          </div>
+          <div id="tagline" class="tagline"></div>
+          <div id="desc" class="desc"></div>
+
+          <div class="actions">
+            <button id="shareBtn" class="btn-secondary">📸 下載代表字分享圖</button>
+            <button id="backBtn" class="btn-ghost">↩ 回到主頁（不能重抽，可再次查看卡牌）</button>
+          </div>
+        </div>
+
+        <div class="footer">
+          本抽籤僅作為 Roche 2026 新春開工趣味互動，不涉及任何醫療或專業建議。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="shareCanvas" width="900" height="900" style="display:none;"></canvas>
+
+  <script>
+    const LETTERS = [
+      { key: "旺", tagline: "人旺、事旺、運也旺", desc: "今年的你，適合大方地把能量放出去，主動承接新的計畫與挑戰，在忙碌之中也會收穫滿滿。" },
+      { key: "穩", tagline: "穩穩來，是種力量", desc: "把步伐放在「持續」而不是「一下子衝完」，今年適合打底、整理與紮根，讓未來更放心往前走。" },
+      { key: "躍", tagline: "準備好了，就勇敢一躍", desc: "累積許久的養分，會在今年轉化成一次關鍵的跳躍；當機會敲門時，相信自己有資格說「我可以」。" },
+      { key: "合", tagline: "一起，會走得更遠", desc: "跨部門、跨角色、跨專業的合作，會變成你今年的重要關鍵字。相信夥伴，也讓夥伴可以相信你。" },
+      { key: "新", tagline: "為自己打開一個新頁面", desc: "嘗試新的方法、新角色或新視角，可能一開始有點不習慣，但會帶來意料之外的驚喜與轉機。" },
+      { key: "亮", tagline: "讓光，落在你身上", desc: "你的努力會被看見，你的專業會被認可。今年適合多一點主動分享，讓大家知道你在做的事有多重要。" },
+      { key: "順", tagline: "心順，路就順", desc: "不是沒有挑戰，而是你能用更柔軟的心態去面對。今年適合調整節奏，為自己找到舒服又能前進的方式。" },
+      { key: "慧", tagline: "用直覺，也用智慧", desc: "你看事情的角度，會比以往更清楚；願意多想一步、多問一句，會替你避開不少不必要的麻煩。" },
+      { key: "拓", tagline: "把邊界畫大一點", desc: "把視野從「眼前」拉到「更遠」，從「這一案」拉到「這條路」，你會發現自己其實有比想像中更多選擇。" },
+      { key: "樂", tagline: "忙碌裡，也要保留快樂", desc: "今年提醒自己：成就感很重要，開心也很重要。記得替自己保留一些真正喜歡、會讓你補血的時刻。" }
+    ];
+
+    const BIG_PRIZE = {
+      key: "星",
+      tagline: "星光加持・大吉大旺",
+      desc: "恭喜你抽中本次隱藏大獎籤！今年的你，不只發光，還會成為照亮他人的那顆星。請洽現場工作人員兌換開工小禮。",
+      jackpot: true
+    };
+
+    const STORAGE_KEY = "roche_lottery_2026_megafx";
+
+    const homeSection = document.getElementById("homeSection");
+    const resultSection = document.getElementById("resultSection");
+    const mainBtn = document.getElementById("mainBtn");
+    const nameInput = document.getElementById("nameInput");
+    const empInput = document.getElementById("empInput");
+    const alreadyText = document.getElementById("alreadyText");
+    const alreadyWord = document.getElementById("alreadyWord");
+
+    const kanjiBox = document.getElementById("kanjiBox");
+    const kanjiEl = document.getElementById("kanji");
+    const taglineEl = document.getElementById("tagline");
+    const descEl = document.getElementById("desc");
+
+    const backBtn = document.getElementById("backBtn");
+    const shareBtn = document.getElementById("shareBtn");
+    const shareCanvas = document.getElementById("shareCanvas");
+    const burst = document.getElementById("burst");
+    const fireworks = document.getElementById("fireworks");
+    const coins = document.getElementById("coins");
+
+    let payload = null; // { name, empId, data }
+
+    function switchSection(showResult) {
+      if (showResult) {
+        homeSection.classList.remove("show");
+        resultSection.classList.add("show");
+      } else {
+        resultSection.classList.remove("show");
+        homeSection.classList.add("show");
+      }
+    }
+
+    function renderResult() {
+      if (!payload) return;
+      const letter = payload.data;
+      kanjiEl.textContent = letter.key;
+      taglineEl.textContent = letter.tagline;
+      descEl.textContent = letter.desc;
+
+      // 標題樣式依大獎與否切換
+      if (letter.jackpot) {
+        taglineEl.classList.add("jackpot");
+      } else {
+        taglineEl.classList.remove("jackpot");
+      }
+    }
+
+    function updateHomeUI() {
+      if (payload) {
+        mainBtn.textContent = "查看我的年度代表字卡";
+        alreadyText.style.display = "block";
+        alreadyWord.textContent = payload.data.key;
+        if (payload.name) nameInput.value = payload.name;
+        if (payload.empId) empInput.value = payload.empId;
+      } else {
+        mainBtn.textContent = "開始抽籤";
+        alreadyText.style.display = "none";
+        alreadyWord.textContent = "";
+      }
+    }
+
+    function loadExisting() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        homeSection.classList.add("show");
+        return;
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.data && parsed.data.key) {
+          payload = parsed;
+          updateHomeUI();
+        }
+      } catch (e) {
+        console.error("Failed to parse stored payload", e);
+      }
+      homeSection.classList.add("show");
+    }
+
+    function triggerBurst() {
+      burst.classList.remove("show");
+      void burst.offsetWidth;
+      burst.classList.add("show");
+      setTimeout(() => {
+        burst.classList.remove("show");
+      }, 700);
+    }
+
+    function triggerJackpotEffects() {
+      fireworks.classList.remove("show");
+      coins.classList.remove("show");
+      void fireworks.offsetWidth;
+      void coins.offsetWidth;
+      fireworks.classList.add("show");
+      coins.classList.add("show");
+      setTimeout(() => {
+        fireworks.classList.remove("show");
+        coins.classList.remove("show");
+      }, 1500);
+    }
+
+    function handleDrawOrView() {
+      if (payload) {
+        renderResult();
+        switchSection(true);
+        return;
+      }
+
+      const name = nameInput.value.trim();
+      const empId = empInput.value.trim();
+      if (!name) {
+        alert("請先輸入姓名，再進行抽籤。");
+        return;
+      }
+
+      // 切到結果畫面，開始抽籤動畫
+      switchSection(true);
+      mainBtn.disabled = true;
+      taglineEl.textContent = "";
+      descEl.textContent = "🔮 抽籤中，請稍候…";
+
+      const spinKeys = LETTERS.map(l => l.key);
+      let i = 0;
+      kanjiBox.classList.add("is-spinning");
+      let spinTimer = setInterval(() => {
+        kanjiEl.textContent = spinKeys[i % spinKeys.length];
+        i++;
+      }, 80);
+
+      setTimeout(() => {
+        clearInterval(spinTimer);
+        kanjiBox.classList.remove("is-spinning");
+
+        // 先抽出一般代表字
+        let letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+        // 再給一個小機率觸發隱藏大獎（約 5%）
+        const jackpotHit = Math.random() < 0.05;
+        if (jackpotHit) {
+          letter = BIG_PRIZE;
+        }
+
+        payload = { name, empId, data: letter };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        updateHomeUI();
+        renderResult();
+
+        kanjiBox.classList.remove("reveal");
+        void kanjiBox.offsetWidth;
+        kanjiBox.classList.add("reveal");
+        triggerBurst();
+
+        if (letter.jackpot) {
+          triggerJackpotEffects();
+        }
+
+        mainBtn.disabled = false;
+      }, 1300);
+    }
+
+    function handleBack() {
+      switchSection(false);
+    }
+
+    function downloadShareImage() {
+      if (!payload) {
+        alert("請先完成抽籤，再下載分享圖。");
+        return;
+      }
+      const canvas = shareCanvas;
+      const ctx = canvas.getContext("2d");
+      const size = canvas.width;
+
+      // 背景
+      const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+      bgGrad.addColorStop(0, "#020617");
+      bgGrad.addColorStop(0.35, "#1d4ed8");
+      bgGrad.addColorStop(0.7, "#b91c1c");
+      bgGrad.addColorStop(1, "#7c2d12");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, size, size);
+
+      // 星點
+      for (let i = 0; i < 80; i++) {
+        const x = Math.random() * size;
+        const y = Math.random() * size;
+        const r = Math.random() * 1.4;
+        ctx.fillStyle = "rgba(255,241,242,0.85)";
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 上方 Roche 六角邊框 + 文字（簡化版）
+      const logoWidth = 260;
+      const logoHeight = 90;
+      const logoY = 80;
+
+      ctx.save();
+      ctx.translate(size / 2, logoY + logoHeight / 2);
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 4;
+
+      const w = logoWidth - 36;
+      const h = logoHeight - 36;
+      const halfW = w / 2;
+      const halfH = h / 2;
+      const dx = 26;
+
+      ctx.beginPath();
+      ctx.moveTo(-halfW + dx, -halfH);
+      ctx.lineTo(halfW - dx, -halfH);
+      ctx.lineTo(halfW, 0);
+      ctx.lineTo(halfW - dx, halfH);
+      ctx.lineTo(-halfW + dx, halfH);
+      ctx.lineTo(-halfW, 0);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "bold 40px 'Noto Sans TC'";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Roche", 0, 4);
+      ctx.restore();
+
+      // 中央卡牌
+      const cx = size / 2;
+      const cy = size / 2 + 40;
+      const cardW = 420;
+      const cardH = 480;
+      const r = 46;
+
+      const cardGrad = ctx.createLinearGradient(cx - cardW/2, cy - cardH/2, cx + cardW/2, cy + cardH/2);
+      cardGrad.addColorStop(0, "#fefce8");
+      cardGrad.addColorStop(1, "#f97316");
+
+      ctx.fillStyle = cardGrad;
+      ctx.beginPath();
+      ctx.moveTo(cx - cardW/2 + r, cy - cardH/2);
+      ctx.lineTo(cx + cardW/2 - r, cy - cardH/2);
+      ctx.quadraticCurveTo(cx + cardW/2, cy - cardH/2, cx + cardW/2, cy - cardH/2 + r);
+      ctx.lineTo(cx + cardW/2, cy + cardH/2 - r);
+      ctx.quadraticCurveTo(cx + cardW/2, cy + cardH/2, cx + cardW/2 - r, cy + cardH/2);
+      ctx.lineTo(cx - cardW/2 + r, cy + cardH/2);
+      ctx.quadraticCurveTo(cx - cardW/2, cy + cardH/2, cx - cardW/2, cy + cardH/2 - r);
+      ctx.lineTo(cx - cardW/2, cy - cardH/2 + r);
+      ctx.quadraticCurveTo(cx - cardW/2, cy - cardH/2, cx - cardW/2 + r, cy - cardH/2);
+      ctx.closePath();
+      ctx.fill();
+
+      // 代表字
+      ctx.fillStyle = "#7c2d12";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "bold 210px 'Noto Sans TC'";
+      ctx.fillText(payload.data.key, cx, cy - 70);
+
+      // 卡牌標題與 tagline
+      ctx.fillStyle = "#7c2d12";
+      ctx.font = "bold 20px 'Noto Sans TC'";
+      ctx.fillText("2026 年度代表字", cx, cy - cardH/2 + 40);
+
+      ctx.fillStyle = "#7c2d12";
+      ctx.font = "18px 'Noto Sans TC'";
+      ctx.fillText(payload.data.tagline, cx, cy + cardH/2 - 90);
+
+      // 姓名 & 員工編號
+      ctx.fillStyle = "#7c2d12";
+      ctx.font = "15px 'Noto Sans TC'";
+      let footer = "";
+      if (payload.name) {
+        footer += payload.name;
+        if (payload.empId) {
+          footer += " ｜ " + payload.empId;
+        }
+      }
+      if (footer) {
+        ctx.fillText(footer, cx, cy + cardH/2 - 60);
+      }
+
+      // 下方註記
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "14px 'Noto Sans TC'";
+      ctx.fillText("Roche 2026 新春開工｜年度代表字抽籤活動", cx, size - 42);
+
+      const a = document.createElement("a");
+      const safeName = (payload.name || "my_lucky_word").replace(/\s+/g, "_");
+      a.download = `Roche_2026_年度代表字_${safeName}.png`;
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+    }
+
+    mainBtn.addEventListener("click", handleDrawOrView);
+    backBtn.addEventListener("click", handleBack);
+    shareBtn.addEventListener("click", downloadShareImage);
+
+    loadExisting();
+  </script>
+</body>
+</html>
